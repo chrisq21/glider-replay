@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react'
 import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
-import {getMapConfig} from './utils'
+import {initMap} from './utils'
 
 // TODO move to env file
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
@@ -20,7 +20,7 @@ export default function Map() {
     if (map.current) return // initialize map only once
     if (!mapContainer?.current) return
 
-    map.current = getMapConfig(mapContainer.current)
+    map.current = initMap(mapContainer.current)
 
     // listen for map changes and update UI
     if (map.current) {
