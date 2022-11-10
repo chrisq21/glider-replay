@@ -3,8 +3,8 @@ import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loade
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
 import {initMap} from './utils'
+import igcArray from '../../data/namibia'
 
-// TODO move to env file
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 
 export default function Map() {
@@ -30,8 +30,14 @@ export default function Map() {
         setZoom(map.current.getZoom().toFixed(2))
       }
 
-      map.current.on('load', updateUI)
       map.current.on('move', updateUI)
+
+      map.current.on('load', () => {
+        updateUI()
+        // add igc track
+        // add 3d model
+        // start animation
+      })
     }
   }, [])
 
