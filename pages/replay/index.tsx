@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Map from '../../components/Map'
+import styles from './replay.module.css'
 
 export default function Replay() {
   return (
@@ -11,7 +12,7 @@ export default function Replay() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Replay</h1>
+        <Map />
       </main>
 
       <footer className={styles.footer}></footer>
