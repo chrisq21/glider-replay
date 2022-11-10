@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
 
 // TODO move to env file
-mapboxgl.accessToken = 'pk.eyJ1IjoiY2hyaXNxMjEiLCJhIjoiY2wyZTB5bmFqMTNuYjNjbGFnc3RyN25rbiJ9.4CAHYC8Sic49gsnwuP_fmA'
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 
 export default function Map() {
   const mapContainer = useRef(null)
