@@ -2,8 +2,6 @@ import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loade
 import {Ref} from 'react'
 import {Threebox} from 'threebox-plugin'
 
-let map = null
-
 let initialMapConfig = {
   // TODO: retrieve center from first igc value
   zoom: 13,
@@ -14,14 +12,14 @@ let initialMapConfig = {
 }
 
 export function initMap(containerRef: Ref<HTMLDivElement>, center: Point = [86.925, 27.9881]) {
-  map = new mapboxgl.Map({
+  const map = new mapboxgl.Map({
     ...initialMapConfig,
     container: containerRef,
     center,
   })
 
   map.on('style.load', () => {
-    configureMapStyles()
+    configureMapStyles(map)
   })
 
   // init threebox and add to window
@@ -35,7 +33,7 @@ export function initMap(containerRef: Ref<HTMLDivElement>, center: Point = [86.9
 }
 
 // 3d terrain and sky
-function configureMapStyles() {
+function configureMapStyles(map) {
   if (!map) return
   // 3d terrain
   map.addSource('mapbox-dem', {
@@ -53,5 +51,66 @@ function configureMapStyles() {
     'high-color': '#add8e6',
     'space-color': '#d8f2ff',
     'star-intensity': 0.0,
+  })
+}
+
+export function addFlightLineLayer(map, path: ThreeDPoint[]) {
+  if (!map || !window.tb) return
+
+  map.current.addLayer({
+    id: 'flight-line-layer',
+    type: 'custom',
+    renderingMode: '3d',
+    onAdd: function () {
+      const line = window.tb.line({
+        geometry: path,
+        width: 1,
+        color: 'steelblue',
+      })
+
+      tb.add(line, 'flight-line') // move layer name to const file
+    },
+
+    render: function () {
+      window.tb.update()
+    },
+  })
+}
+
+export function addGliderModel(map, path: ThreeDPoint[]) {
+  if (!map || !window.tb) return
+
+  const onGliderChanged = (e) => {
+    console.log(e.detail.object)
+  }
+
+  map.current.addLayer({
+    id: 'glider-layer',
+    type: 'custom',
+    renderingMode: '3d',
+    onAdd: function () {
+      let options = {
+        obj: './plane.glb',
+        type: 'gltf',
+        scale: 0.5,
+        rotation: {x: 90, y: 0, z: 0},
+        anchor: 'center',
+        bbox: false,
+      }
+
+      window.tb.loadObj(options, function (model) {
+        const glider = model.setCoords([path[0][0], path[0][1]])
+        glider.setRotation({x: 0, y: 0, z: 135})
+        glider.addEventListener('ObjectChanged', onGliderChanged, false)
+        console.log(glider)
+        window.tb.add(glider)
+
+        glider.followPath({path, duration: 15000000, trackHeading: false})
+      })
+    },
+
+    render: function () {
+      window.tb.update()
+    },
   })
 }

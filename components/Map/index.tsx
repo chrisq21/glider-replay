@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react'
 import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
-import {initMap} from './utils'
+import {addFlightLineLayer, addGliderModel, initMap} from './utils'
 import igcArray from '../../data/namibia'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
@@ -10,10 +10,6 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 export default function Map() {
   const mapContainer = useRef(null)
   const map = useRef(null)
-
-  const [lng, setLng] = useState()
-  const [lat, setLat] = useState()
-  const [zoom, setZoom] = useState()
 
   // Initial map setup
   useEffect(() => {
@@ -24,42 +20,11 @@ export default function Map() {
     const center = [igcStart[0], igcStart[1]] as Point
     map.current = initMap(mapContainer.current, center)
 
-    // listen for map changes and update UI
     if (map.current) {
-      const updateUI = () => {
-        setLng(map.current.getCenter().lng.toFixed(4))
-        setLat(map.current.getCenter().lat.toFixed(4))
-        setZoom(map.current.getZoom().toFixed(2))
-      }
-
-      // add flight line
-      const addFlightLine = () => {
-        if (!window.tb || !map.current) return
-
-        map.current.addLayer({
-          id: 'flight-line-layer',
-          type: 'custom',
-          renderingMode: '3d',
-          onAdd: function () {
-            const path = igcArray
-            const line = window.tb.line({
-              geometry: path,
-              width: 1,
-              color: 'steelblue',
-            })
-
-            tb.add(line, 'flight-line') // move layer name to const file
-          },
-
-          render: function () {
-            window.tb.update()
-          },
-        })
-      }
-
       map.current.on('load', () => {
         console.log('load')
-        addFlightLine()
+        addFlightLineLayer(map, igcArray as ThreeDPoint[])
+        addGliderModel(map, igcArray as ThreeDPoint[])
         // add 3d model
         // start animation
       })
