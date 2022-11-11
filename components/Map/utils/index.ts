@@ -24,7 +24,7 @@ export function initMap(containerRef: Ref<HTMLDivElement>, center: Point = [86.9
 
   // init threebox and add to window
   window.tb = new Threebox(map, map.getCanvas().getContext('webgl'), {
-    defaultLights: false,
+    defaultLights: true,
     terrain: true,
     enableTooltips: false,
   })
@@ -51,66 +51,5 @@ function configureMapStyles(map) {
     'high-color': '#add8e6',
     'space-color': '#d8f2ff',
     'star-intensity': 0.0,
-  })
-}
-
-export function addFlightLineLayer(map, path: ThreeDPoint[]) {
-  if (!map || !window.tb) return
-
-  map.current.addLayer({
-    id: 'flight-line-layer',
-    type: 'custom',
-    renderingMode: '3d',
-    onAdd: function () {
-      const line = window.tb.line({
-        geometry: path,
-        width: 1,
-        color: 'steelblue',
-      })
-
-      tb.add(line, 'flight-line') // move layer name to const file
-    },
-
-    render: function () {
-      window.tb.update()
-    },
-  })
-}
-
-export function addGliderModel(map, path: ThreeDPoint[]) {
-  if (!map || !window.tb) return
-
-  const onGliderChanged = (e) => {
-    console.log(e.detail.object)
-  }
-
-  map.current.addLayer({
-    id: 'glider-layer',
-    type: 'custom',
-    renderingMode: '3d',
-    onAdd: function () {
-      let options = {
-        obj: './plane.glb',
-        type: 'gltf',
-        scale: 0.5,
-        rotation: {x: 90, y: 0, z: 0},
-        anchor: 'center',
-        bbox: false,
-      }
-
-      window.tb.loadObj(options, function (model) {
-        const glider = model.setCoords([path[0][0], path[0][1]])
-        glider.setRotation({x: 0, y: 0, z: 135})
-        glider.addEventListener('ObjectChanged', onGliderChanged, false)
-        console.log(glider)
-        window.tb.add(glider)
-
-        glider.followPath({path, duration: 15000000, trackHeading: false})
-      })
-    },
-
-    render: function () {
-      window.tb.update()
-    },
   })
 }
