@@ -8,7 +8,7 @@ let initialMapConfig = {
   pitch: 85,
   style: 'mapbox://styles/mapbox/satellite-v9',
   timezone: 'America/New_York', // is this needed?
-  interactive: true,
+  interactive: false,
 }
 
 export function initMap(containerRef: Ref<HTMLDivElement>, center: Point = [86.925, 27.9881]) {

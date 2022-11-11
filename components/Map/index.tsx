@@ -2,14 +2,22 @@ import {useEffect, useRef, useState} from 'react'
 import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
-import {initMap} from './utils'
+import {initMap} from './utils/mapConfig'
 import igcArray from '../../data/namibia'
+import {updateCameraPosition, updateOrbit} from './utils/cameraConfig'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 
 // Global vars
 let flightLine
 let gliderModel
+
+// camera controls
+let keyPressed: string | null = null
+let cameraOffsets = {
+  orbit: 0,
+  distance: 0,
+}
 
 export default function Map() {
   const mapContainer = useRef(null)
@@ -37,7 +45,15 @@ export default function Map() {
 
       /* Listen for glider updates */
       const onGliderChanged = (e) => {
-        // console.log(e.detail.object)
+        const camera = map.current.getFreeCameraOptions()
+        const model = e.detail.object
+        const cameraSettings = {
+          altitude: 133,
+          pitch: 79.5,
+          distance: 0.006,
+        }
+        updateOrbit(keyPressed, cameraOffsets)
+        updateCameraPosition(map.current, camera, model, cameraSettings, cameraOffsets)
       }
 
       /* Add glider and flightline */
@@ -60,6 +76,15 @@ export default function Map() {
           window.tb.loadObj(options, function (model) {
             gliderModel = model.setCoords([path[0][0], path[0][1]])
             gliderModel.setRotation({x: 0, y: 0, z: 135})
+
+            /* Add camera controls listener */
+            document.addEventListener('keydown', function (event) {
+              keyPressed = event.key
+            })
+            document.addEventListener('keyup', function () {
+              keyPressed = null
+            })
+
             gliderModel.addEventListener('ObjectChanged', onGliderChanged, false)
             window.tb.add(gliderModel)
 

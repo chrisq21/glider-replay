@@ -14,8 +14,6 @@ export default function Replay() {
       <main className={styles.main}>
         <Map />
       </main>
-
-      <footer className={styles.footer}></footer>
     </div>
   )
 }

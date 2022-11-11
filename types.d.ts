@@ -1,3 +1,3 @@
-type Point = [Number, Number]
+type Point = [number, number]
 
-type ThreeDPoint = [Number, Number, Number]
+type ThreeDPoint = [number, number, number]
