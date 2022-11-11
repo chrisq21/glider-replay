@@ -20,7 +20,9 @@ export default function Map() {
     if (map.current) return // initialize map only once
     if (!mapContainer?.current) return
 
-    map.current = initMap(mapContainer.current)
+    const igcStart = igcArray[0]
+    const center = [igcStart[0], igcStart[1]] as Point
+    map.current = initMap(mapContainer.current, center)
 
     // listen for map changes and update UI
     if (map.current) {
@@ -30,11 +32,34 @@ export default function Map() {
         setZoom(map.current.getZoom().toFixed(2))
       }
 
-      map.current.on('move', updateUI)
+      // add flight line
+      const addFlightLine = () => {
+        if (!window.tb || !map.current) return
+
+        map.current.addLayer({
+          id: 'flight-line-layer',
+          type: 'custom',
+          renderingMode: '3d',
+          onAdd: function () {
+            const path = igcArray
+            const line = window.tb.line({
+              geometry: path,
+              width: 1,
+              color: 'steelblue',
+            })
+
+            tb.add(line, 'flight-line') // move layer name to const file
+          },
+
+          render: function () {
+            window.tb.update()
+          },
+        })
+      }
 
       map.current.on('load', () => {
-        updateUI()
-        // add igc track
+        console.log('load')
+        addFlightLine()
         // add 3d model
         // start animation
       })
@@ -44,10 +69,7 @@ export default function Map() {
   return (
     <div className={styles.container}>
       <noscript>You need to enable JavaScript to run this app.</noscript>
-      <div className={styles.sidebar}>
-        {/* TODO need to grab values from state */}
-        Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-      </div>
+      <div className={styles.sidebar}>Values here</div>
       <div ref={mapContainer} className={styles.mapContainer} />
     </div>
   )

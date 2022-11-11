@@ -1,11 +1,11 @@
 import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 import {Ref} from 'react'
+import {Threebox} from 'threebox-plugin'
 
 let map = null
 
 let initialMapConfig = {
   // TODO: retrieve center from first igc value
-  center: [86.925, 27.9881], // everest
   zoom: 13,
   pitch: 85,
   style: 'mapbox://styles/mapbox/satellite-v9',
@@ -13,14 +13,22 @@ let initialMapConfig = {
   interactive: true,
 }
 
-export function initMap(containerRef: Ref<HTMLDivElement>) {
+export function initMap(containerRef: Ref<HTMLDivElement>, center: Point = [86.925, 27.9881]) {
   map = new mapboxgl.Map({
-    container: containerRef,
     ...initialMapConfig,
+    container: containerRef,
+    center,
   })
 
   map.on('style.load', () => {
     configureMapStyles()
+  })
+
+  // init threebox and add to window
+  window.tb = new Threebox(map, map.getCanvas().getContext('webgl'), {
+    defaultLights: false,
+    terrain: true,
+    enableTooltips: false,
   })
 
   return map

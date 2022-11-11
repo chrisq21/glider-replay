@@ -1,1 +1,1 @@
-type Point = Number[]
+type Point = [Number, Number]
