@@ -3,7 +3,7 @@ import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loade
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
 import {initMap, toggleInteractive} from './utils/mapConfig'
-import igcArray from '../../data/namibia'
+import igcArray from '../../data/skyline'
 import {updateCameraPosition, updateOrbit} from './utils/cameraConfig'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
@@ -14,7 +14,7 @@ let gliderModel
 let isInteractive = false
 
 // TODO duration should probably depend on size of igc array
-const duration = 15000000
+const duration = 150000
 
 // camera controls
 let keyPressed: string | null = null

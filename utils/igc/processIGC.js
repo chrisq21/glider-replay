@@ -1,7 +1,7 @@
 var igcToJson = require('./igcToJson.js').default
 var fs = require('fs'),
   path = require('path'),
-  filePath = path.join(__dirname, '../data/igcExamples/namibia.igc')
+  filePath = path.join(__dirname, '../../data/igcExamples/skyline.igc')
 
 function readIGC() {
   fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
