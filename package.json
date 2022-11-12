@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@chrisq21/threebox-plugin-fork": "^2.2.7",
+    "@types/mapbox__mapbox-gl-geocoder": "^4.7.3",
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.8",

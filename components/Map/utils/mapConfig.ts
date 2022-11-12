@@ -1,4 +1,4 @@
-import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
+import mapboxgl from 'mapbox-gl'
 import {Ref} from 'react'
 import {Threebox} from '@chrisq21/threebox-plugin-fork'
 

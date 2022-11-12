@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
+import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
 import {initMap, toggleInteractive} from './utils/mapConfig'
