@@ -6,8 +6,6 @@ import {initMap, toggleInteractive} from './utils/mapConfig'
 import igcArray from '../../data/skyline'
 import {updateCameraPosition, updateOrbit} from './utils/cameraConfig'
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-
 // Global vars
 let flightLine
 let gliderModel

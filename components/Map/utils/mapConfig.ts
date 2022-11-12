@@ -12,6 +12,8 @@ let initialMapConfig = {
 }
 
 export function initMap(containerRef: Ref<HTMLDivElement>, center: Point = [86.925, 27.9881]) {
+  mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+
   const map = new mapboxgl.Map({
     ...initialMapConfig,
     container: containerRef,
