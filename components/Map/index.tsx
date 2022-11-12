@@ -89,7 +89,7 @@ export default function Map() {
             window.tb.add(gliderModel)
 
             /* fly glider */
-            gliderModel.followPath({path, duration, trackHeading: false})
+            gliderModel.followPath({path, duration, trackHeading: true})
           })
 
           /* add flight line */

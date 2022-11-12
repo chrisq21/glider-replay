@@ -1,6 +1,6 @@
 import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 import {Ref} from 'react'
-import {Threebox} from 'threebox-plugin'
+import {Threebox} from '@chrisq21/threebox-plugin-fork'
 
 let initialMapConfig = {
   // TODO: retrieve center from first igc value
