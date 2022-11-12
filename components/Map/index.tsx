@@ -1,8 +1,8 @@
-import {useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
-import {initMap} from './utils/mapConfig'
+import {initMap, toggleInteractive} from './utils/mapConfig'
 import igcArray from '../../data/namibia'
 import {updateCameraPosition, updateOrbit} from './utils/cameraConfig'
 
@@ -11,12 +11,18 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 // Global vars
 let flightLine
 let gliderModel
+let isInteractive = false
+
+// TODO duration should probably depend on size of igc array
+const duration = 15000000
 
 // camera controls
 let keyPressed: string | null = null
 let cameraOffsets = {
   orbit: 0,
   distance: 0,
+  pitch: 79.5,
+  altitude: 133,
 }
 
 export default function Map() {
@@ -24,6 +30,22 @@ export default function Map() {
   const map = useRef(null)
 
   const [shouldFly, setShouldFly] = useState(false)
+
+  /* Listen for glider updates */
+  const onGliderChanged = (e) => {
+    if (isInteractive) return
+    if (!map.current) return
+
+    const camera = map.current.getFreeCameraOptions()
+    const model = e.detail.object
+    const cameraSettings = {
+      altitude: 133,
+      pitch: 79.5,
+      distance: 0.006,
+    }
+    updateOrbit(keyPressed, cameraOffsets)
+    updateCameraPosition(map.current, camera, model, cameraSettings, cameraOffsets, isInteractive)
+  }
 
   // Initial map setup
   useEffect(() => {
@@ -37,24 +59,11 @@ export default function Map() {
 
   useEffect(() => {
     /* Animation settings */
-    const duration = 15000000
+
     const path = igcArray // TODO smooth out array
 
     const addGliderLayer = () => {
       if (!map.current) return
-
-      /* Listen for glider updates */
-      const onGliderChanged = (e) => {
-        const camera = map.current.getFreeCameraOptions()
-        const model = e.detail.object
-        const cameraSettings = {
-          altitude: 133,
-          pitch: 79.5,
-          distance: 0.006,
-        }
-        updateOrbit(keyPressed, cameraOffsets)
-        updateCameraPosition(map.current, camera, model, cameraSettings, cameraOffsets)
-      }
 
       /* Add glider and flightline */
       map.current.addLayer({
@@ -128,9 +137,19 @@ export default function Map() {
         <button
           onClick={() => {
             setShouldFly(true)
+            isInteractive = false
           }}
         >
           Start flying
+        </button>
+        <button
+          onClick={() => {
+            if (!map.current) return
+            isInteractive = !isInteractive
+            toggleInteractive(map.current, isInteractive)
+          }}
+        >
+          Toggle (follow | free roam)
         </button>
       </div>
       <div ref={mapContainer} className={styles.mapContainer} />

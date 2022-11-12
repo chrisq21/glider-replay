@@ -54,3 +54,15 @@ function configureMapStyles(map) {
     },
   })
 }
+
+export function toggleInteractive(map, isInteractive) {
+  window.isInteractive = isInteractive
+  const type = isInteractive ? 'enable' : 'disable'
+  map.boxZoom[type]()
+  map.scrollZoom[type]()
+  map.dragPan[type]()
+  map.dragRotate[type]()
+  map.keyboard[type]()
+  map.doubleClickZoom[type]()
+  map.touchZoomRotate[type]()
+}

@@ -2,10 +2,12 @@ import mapboxgl from '!mapbox-gl' // eslint-disable-line import/no-webpack-loade
 import {getBearing} from './helpers'
 
 const nearLimit = -0.002
-const farLimit = 0.15
-const distanceIncrement = 0.0002
+const farLimit = 1
+const distanceIncrement = 0.0004
 const orbitIncrement = 0.02
 
+const altitudeIncrement = 10
+// 87 83
 export function updateOrbit(keyPressed, cameraOffsets) {
   switch (keyPressed) {
     case 'ArrowRight':
@@ -18,6 +20,7 @@ export function updateOrbit(keyPressed, cameraOffsets) {
       {
         if (cameraOffsets.distance >= nearLimit) {
           cameraOffsets.distance -= distanceIncrement
+          cameraOffsets.altitude -= altitudeIncrement
         }
       }
       break
@@ -25,13 +28,22 @@ export function updateOrbit(keyPressed, cameraOffsets) {
       {
         if (cameraOffsets.distance < farLimit) {
           cameraOffsets.distance += distanceIncrement
+          cameraOffsets.altitude += altitudeIncrement
         }
       }
+      break
+    case 'w':
+      cameraOffsets.altitude += altitudeIncrement
+      break
+    case 's':
+      cameraOffsets.altitude -= altitudeIncrement
       break
   }
 }
 
-export function updateCameraPosition(map, camera, model, cameraSettings, cameraOffsets) {
+export function updateCameraPosition(map, camera, model, cameraSettings, cameraOffsets, isInteractive) {
+  if (isInteractive) return false
+
   const {altitude, distance, pitch} = cameraSettings
   const modelCoordinates = model.coordinates
   const totalDistance = distance + cameraOffsets.distance
@@ -44,7 +56,8 @@ export function updateCameraPosition(map, camera, model, cameraSettings, cameraO
   const newBearing = getBearing(cameraCoordinates, model.coordinates)
 
   // Calculate position
-  camera.position = mapboxgl.MercatorCoordinate.fromLngLat(cameraCoordinates, modelCoordinates[2] + altitude)
+  camera.position = mapboxgl.MercatorCoordinate.fromLngLat(cameraCoordinates, modelCoordinates[2] + cameraOffsets.altitude)
+  // console.log(cameraOffsets.altitude)
 
   camera.setPitchBearing(pitch, newBearing)
   map.setFreeCameraOptions(camera)
