@@ -37,9 +37,9 @@ export default function Map() {
     const camera = map.current.getFreeCameraOptions()
     const model = e.detail.object
     const cameraSettings = {
-      altitude: 133,
+      altitude: 300,
       pitch: 79.5,
-      distance: 0.006,
+      distance: 0.02,
     }
     updateOrbit(keyPressed, cameraOffsets)
     updateCameraPosition(map.current, camera, model, cameraSettings, cameraOffsets, isInteractive)

@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl'
 import {getBearing} from './helpers'
 
-const nearLimit = -0.002
+const nearLimit = -0.02
 const farLimit = 1
 const distanceIncrement = 0.0004
 const orbitIncrement = 0.02
@@ -56,7 +56,7 @@ export function updateCameraPosition(map, camera, model, cameraSettings, cameraO
   const newBearing = getBearing(cameraCoordinates, model.coordinates)
 
   // Calculate position
-  camera.position = mapboxgl.MercatorCoordinate.fromLngLat(cameraCoordinates, modelCoordinates[2] + cameraOffsets.altitude)
+  camera.position = mapboxgl.MercatorCoordinate.fromLngLat(cameraCoordinates, modelCoordinates[2] + altitude + cameraOffsets.altitude)
   // console.log(cameraOffsets.altitude)
 
   camera.setPitchBearing(pitch, newBearing)
