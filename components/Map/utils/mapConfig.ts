@@ -6,7 +6,7 @@ let initialMapConfig = {
   // TODO: retrieve center from first igc value
   zoom: 13,
   pitch: 85,
-  style: 'mapbox://styles/mapbox/satellite-v9',
+  style: 'mapbox://styles/mapbox/satellite-v9?optimize=true',
   timezone: 'America/New_York', // is this needed?
   interactive: false,
 }
