@@ -28,3 +28,8 @@ export const getBearing = (start: Point, end: Point) => {
   const lat1 = start[1]
   return getNewBearing(lat1, long1, lat2, long2)
 }
+
+export const getFlyDuration = (totalTime) => {
+  const scalar = 1
+  return totalTime / scalar
+}

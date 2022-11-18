@@ -1,18 +1,14 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
-import mapboxgl from 'mapbox-gl'
+import {useEffect, useRef, useState} from 'react'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import styles from './map.module.css'
 import {initMap, toggleInteractive} from './utils/mapConfig'
-import igcArray from '../../data/skyline'
 import {updateCameraPosition, updateOrbit} from './utils/cameraConfig'
+import {getFlyDuration} from './utils/helpers'
 
 // Global vars
 let flightLine
 let gliderModel
 let isInteractive = false
-
-// TODO duration should probably depend on size of igc array
-const duration = 150000
 
 // camera controls
 let keyPressed: string | null = null
@@ -23,7 +19,7 @@ let cameraOffsets = {
   altitude: 133,
 }
 
-export default function Map() {
+export default function Map({igcData}) {
   const mapContainer = useRef(null)
   const map = useRef(null)
 
@@ -50,7 +46,7 @@ export default function Map() {
     if (map.current) return // initialize map only once
     if (!mapContainer?.current) return
 
-    const igcStart = igcArray[0]
+    const igcStart = igcData.coordinates[0]
     const center = [igcStart[0], igcStart[1]] as Point
     map.current = initMap(mapContainer.current, center)
   }, [])
@@ -58,7 +54,8 @@ export default function Map() {
   useEffect(() => {
     /* Animation settings */
 
-    const path = igcArray // TODO smooth out array
+    const path = igcData.coordinates // TODO smooth out array
+    const duration = getFlyDuration(igcData.totalTime)
 
     const addGliderLayer = () => {
       if (!map.current) return
@@ -101,7 +98,7 @@ export default function Map() {
 
           /* add flight line */
           flightLine = window.tb.line({
-            geometry: igcArray,
+            geometry: igcData.coordinates,
             width: 1,
             color: 'steelblue',
           })

@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Map from '../../components/Map'
 import styles from './replay.module.css'
+import igcData from '../../data/new/skyline'
 
 export default function Replay() {
   return (
@@ -12,7 +13,7 @@ export default function Replay() {
       </Head>
 
       <main className={styles.main}>
-        <Map />
+        <Map igcData={igcData} />
       </main>
     </div>
   )

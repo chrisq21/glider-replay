@@ -11,17 +11,21 @@ function readIGC() {
       const igcData = igcToJson(data)
       const count = igcData.gpsAltitude.length - 10
 
-      const animationsArray = []
+      const startTime = new Date(igcData.recordTime[0]).getTime()
+      const endTime = new Date(igcData.recordTime[igcData.recordTime.length - 1]).getTime()
+      const totalTime = Math.abs(endTime - startTime)
+
+      console.log('total time', totalTime)
+
+      const coordinates = []
 
       for (let i = 0; i < count; i++) {
-        animationsArray.push([igcData.latLong[i][1], igcData.latLong[i][0], igcData.gpsAltitude[i]])
+        coordinates.push([igcData.latLong[i][1], igcData.latLong[i][0], igcData.gpsAltitude[i]])
       }
 
       console.log('count', count)
 
-      // igcToJson(data)
-      // console.log()
-      let jsonStr = JSON.stringify({sample: animationsArray})
+      let jsonStr = JSON.stringify({coordinates, totalTime})
       console.log('write to data')
       fs.writeFileSync('igc-data-sample.json', jsonStr)
     } else {
