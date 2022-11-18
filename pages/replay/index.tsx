@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Map from '../../components/Map'
 import styles from './replay.module.css'
-import igcData from '../../data/new/skyline'
+import igcData from '../../data/new/namibia'
 
 export default function Replay() {
   return (

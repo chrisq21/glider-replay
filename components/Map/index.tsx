@@ -70,7 +70,7 @@ export default function Map({igcData}) {
           let options = {
             obj: './plane.glb',
             type: 'gltf',
-            scale: 0.5,
+            scale: 0.1,
             rotation: {x: 90, y: 0, z: 0},
             anchor: 'center',
             bbox: false,
