@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import CMap from '../../components/CMap'
 import styles from './cesium.module.css'
-import igcData from '../../data/new/namibia'
+import igcData from '../../data/new/arizona'
 
 export default function Replay() {
   return (
