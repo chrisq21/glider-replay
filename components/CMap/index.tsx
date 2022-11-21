@@ -1,14 +1,17 @@
-if (typeof window !== 'undefined') window.CESIUM_BASE_URL = '/'
-
-import * as Cesium from 'cesium'
-import 'cesium/Build/Cesium/Widgets/widgets.css'
-import {useEffect} from 'react'
+import Head from 'next/head'
+import Script from 'next/script'
 import styles from './cmap.module.css'
 
-Cesium.Ion.defaultAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-
 function CMap() {
-  useEffect(() => {
+  // const initMap = () => {
+  //   window.Cesium.Ion.defaultAccessToken = process.env.NEXT_PUBLIC_CESIUM_ACCESS_TOKEN
+  //   console.log('did it yay', window.Cesium)
+  // }
+  const initMap = () => {
+    window.Cesium.Ion.defaultAccessToken = process.env.NEXT_PUBLIC_CESIUM_ACCESS_TOKEN
+
+    if (!window.Cesium) return
+
     // Initialize the Cesium Viewer in the HTML element with the "cesiumContainer" ID.
     const viewer = new Cesium.Viewer('cesiumContainer', {
       terrainProvider: Cesium.createWorldTerrain(),
@@ -23,10 +26,15 @@ function CMap() {
         pitch: Cesium.Math.toRadians(-15.0),
       },
     })
-  }, [])
+  }
 
   return (
     <div className={styles.container}>
+      <Head>
+        <link href="https://cesium.com/downloads/cesiumjs/releases/1.99/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+      </Head>
+      <Script onReady={initMap} src="https://cesium.com/downloads/cesiumjs/releases/1.99/Build/Cesium/Cesium.js" />
+
       <div id="cesiumContainer" className={styles.mapContainer}></div>
     </div>
   )

@@ -1,3 +1,8 @@
+const cesiumSource = 'node_modules/cesium/Source'
+const cesiumWorkers = '../Build/Cesium/Workers'
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const path = require('path')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // TODO enable typescript build errors

@@ -19,7 +19,10 @@ export default function Home() {
 
         <p className={styles.description}>
           <Link href="/replay" className={styles.card}>
-            Replay Page
+            Mapbox Replay Page
+          </Link>
+          <Link href="/cesium" className={styles.card}>
+            Cesium Replay Page
           </Link>
         </p>
 
