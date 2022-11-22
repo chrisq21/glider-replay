@@ -3,7 +3,7 @@ import Script from 'next/script'
 import styles from './cmap.module.css'
 
 function CMap({igcData}) {
-  const initMap = () => {
+  const initMap = async () => {
     const {coordinates, totalTime} = igcData
     const totalSeconds = totalTime / 1000
     // TODO null check and catch errors
@@ -12,13 +12,39 @@ function CMap({igcData}) {
     const viewer = new Cesium.Viewer('cesiumContainer', {
       terrainProvider: Cesium.createWorldTerrain(),
     })
+    // Specify our point of interest.
+    const pointOfInterest = Cesium.Cartographic.fromDegrees(coordinates[0][0], coordinates[0][1])
+    const initialGroundHeight = await getGroundHeight(viewer, pointOfInterest)
+    const flightInitialHeight = coordinates[0][2]
+    const groundDiff = flightInitialHeight - initialGroundHeight
 
-    const condenseCoordinates = coordinates.map((coordinate, index) => (index % 3 === 0 ? coordinate : null)).filter((item) => !!item)
     const flightData = coordinates.map((coordinate) => {
-      return {longitude: coordinate[0], latitude: coordinate[1], height: coordinate[2]}
+      let height = coordinate[2] - groundDiff
+      const halfGliderHeight = 1 // TODO add half the height of the model
+      // don't let the glider go below the ground
+      if (height <= initialGroundHeight + halfGliderHeight) {
+        height = initialGroundHeight + halfGliderHeight
+      }
+      return {longitude: coordinate[0], latitude: coordinate[1], height}
     })
 
-    const timeStep = totalSeconds / coordinates.length
+    animate(viewer, flightData, totalSeconds)
+
+    viewer.entities.add({
+      description: `Location:`,
+      position: Cesium.Cartesian3.fromDegrees(coordinates[0][0], coordinates[0][1], initialGroundHeight),
+      point: {pixelSize: 10, color: Cesium.Color.RED},
+    })
+
+    viewer.entities.add({
+      description: `Location:`,
+      position: Cesium.Cartesian3.fromDegrees(coordinates[0][0], coordinates[0][1], coordinates[0][2]),
+      point: {pixelSize: 10, color: Cesium.Color.GREEN},
+    })
+  }
+
+  const animate = (viewer, flightData, totalSeconds) => {
+    const timeStep = totalSeconds / flightData.length
 
     // TODO get time from IGC data
     const start = Cesium.JulianDate.fromIso8601('2020-03-09T23:10:00Z')
@@ -48,6 +74,11 @@ function CMap({igcData}) {
     })
     // Make the camera track this moving entity.
     viewer.trackedEntity = airplaneEntity
+  }
+
+  const getGroundHeight = async (viewer, position) => {
+    const samples = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [position])
+    return samples[0].height
   }
 
   return (
