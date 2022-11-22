@@ -29,18 +29,6 @@ function CMap({igcData}) {
     })
 
     animate(viewer, flightData, totalSeconds)
-
-    viewer.entities.add({
-      description: `Location:`,
-      position: Cesium.Cartesian3.fromDegrees(coordinates[0][0], coordinates[0][1], initialGroundHeight),
-      point: {pixelSize: 10, color: Cesium.Color.RED},
-    })
-
-    viewer.entities.add({
-      description: `Location:`,
-      position: Cesium.Cartesian3.fromDegrees(coordinates[0][0], coordinates[0][1], coordinates[0][2]),
-      point: {pixelSize: 10, color: Cesium.Color.GREEN},
-    })
   }
 
   const animate = (viewer, flightData, totalSeconds) => {
