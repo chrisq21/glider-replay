@@ -31,23 +31,15 @@ function CMap({igcData}) {
     viewer.clock.multiplier = 3
     // Start playing the scene.
     viewer.clock.shouldAnimate = true
-
-    // The SampledPositionedProperty stores the position and timestamp for each sample along the radar sample series.
     const positionProperty = new Cesium.SampledPositionProperty()
 
     for (let i = 0; i < flightData.length; i++) {
       const dataPoint = flightData[i]
-
-      // Declare the time for this individual sample and store it in a new JulianDate instance.
       const time = Cesium.JulianDate.addSeconds(start, i * timeStep, new Cesium.JulianDate())
       const position = Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height)
-      // Store the position along with its timestamp.
-      // Here we add the positions all upfront, but these can be added at run-time as samples are received from a server.
       positionProperty.addSample(time, position)
     }
 
-    // STEP 4 CODE (green circle entity)
-    // Create an entity to both visualize the entire radar sample series with a line and add a point that moves along the samples.
     const airplaneEntity = viewer.entities.add({
       availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({start: start, stop: stop})]),
       position: positionProperty,
