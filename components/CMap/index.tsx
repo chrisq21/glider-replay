@@ -54,20 +54,32 @@ function CMap({igcData}) {
       positionProperty.addSample(time, position)
     }
 
-    const airplaneEntity = viewer.entities.add({
-      availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({start: start, stop: stop})]),
-      position: positionProperty,
-      point: {pixelSize: 30, color: Cesium.Color.GREEN},
-      path: new Cesium.PathGraphics({width: 3}),
-    })
-    // Make the camera track this moving entity.
-    viewer.trackedEntity = airplaneEntity
+    // STEP 6 CODE (airplane entity)
+    async function loadModel() {
+      // Load the glTF model from Cesium ion.
+      const airplaneUri = await Cesium.IonResource.fromAssetId(1412577)
+      const airplaneEntity = viewer.entities.add({
+        availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({start: start, stop: stop})]),
+        position: positionProperty,
+        // Attach the 3D model instead of the green point.
+        model: {uri: airplaneUri},
+        // Automatically compute the orientation from the position.
+        orientation: new Cesium.VelocityOrientationProperty(positionProperty),
+        path: new Cesium.PathGraphics({width: 3}),
+      })
+
+      viewer.trackedEntity = airplaneEntity
+    }
+
+    loadModel()
   }
 
   const getGroundHeight = async (viewer, position) => {
     const samples = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [position])
     return samples[0].height
   }
+
+  // 1412577 sailplane id
 
   return (
     <div className={styles.container}>
