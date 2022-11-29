@@ -41,13 +41,17 @@ function CMap({ igcData }) {
   };
 
   const animate = (viewer, flightCoordinates, totalSeconds, recordTime) => {
-    // TODO get time from IGC data
+    /* Clock setup */
+
     start = Cesium.JulianDate.fromIso8601(recordTime[0]);
     stop = Cesium.JulianDate.addSeconds(
       start,
       totalSeconds,
       new Cesium.JulianDate()
     );
+
+    viewer.clock.clockRange = Cesium.Clock.LOOPED;
+
     viewer.clock.startTime = start.clone();
     viewer.clock.stopTime = stop.clone();
     viewer.clock.currentTime = start.clone();
@@ -71,6 +75,7 @@ function CMap({ igcData }) {
     }
 
     async function loadModel() {
+      // 1412577 sailplane id
       // Load the glTF model from Cesium ion.
       const airplaneUri = await Cesium.IonResource.fromAssetId(1412577);
       airplaneEntity = viewer.entities.add({
@@ -82,7 +87,12 @@ function CMap({ igcData }) {
         model: { uri: airplaneUri },
         // Automatically compute the orientation from the position.
         orientation: new Cesium.VelocityOrientationProperty(positionProperty),
-        path: new Cesium.PathGraphics({ width: 3 }),
+        path: new Cesium.PathGraphics({
+          width: 4,
+          material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.fromBytes(255, 90, 95)
+          ),
+        }),
       });
 
       viewer.trackedEntity = airplaneEntity;
@@ -99,7 +109,11 @@ function CMap({ igcData }) {
     return samples[0].height;
   };
 
-  // 1412577 sailplane id
+  const handleSliderChange = (e) => {
+    const index = e.target.value;
+    const time = recordTime[index];
+    viewer.clock.currentTime = Cesium.JulianDate.fromIso8601(time);
+  };
 
   return (
     <div className={styles.container}>
@@ -114,6 +128,14 @@ function CMap({ igcData }) {
         src="https://cesium.com/downloads/cesiumjs/releases/1.99/Build/Cesium/Cesium.js"
       />
       <div id="cesiumContainer" className={styles.mapContainer}></div>
+      <div className={styles.uiContainer}>
+        <input
+          type={"range"}
+          onDragEnd={handleSliderChange}
+          min={0}
+          max={recordTime.length - 1}
+        />
+      </div>
     </div>
   );
 }
