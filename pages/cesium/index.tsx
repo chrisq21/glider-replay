@@ -1,7 +1,7 @@
-import Head from 'next/head'
-import CMap from '../../components/CMap'
-import styles from './cesium.module.css'
-import igcData from '../../data/new/arizona'
+import Head from "next/head";
+import CMap from "../../components/CMap";
+import styles from "./cesium.module.css";
+import igcData from "../../data/new/alps";
 
 export default function Replay() {
   return (
@@ -16,5 +16,5 @@ export default function Replay() {
         <CMap igcData={igcData} />
       </main>
     </div>
-  )
+  );
 }

@@ -1,15 +1,50 @@
 import Head from "next/head";
 import Script from "next/script";
 import styles from "./cmap.module.css";
+import Chart from "chart.js/auto";
 
 function CMap({ igcData }) {
-  const { coordinates, totalTime, recordTime } = igcData;
+  /* Gather IGC data */
+  const { recordTime, latLong, pressureAltitude } = igcData;
+  const startTime = new Date(recordTime[0]).getTime();
+  const endTime = new Date(recordTime[recordTime.length - 1]).getTime();
+  const totalTime = Math.abs(endTime - startTime);
   const totalSeconds = totalTime / 1000;
+
+  const coordinates = [];
+  for (let i = 0; i < pressureAltitude.length - 1; i++) {
+    coordinates.push([latLong[i][1], latLong[i][0], pressureAltitude[i]]);
+  }
 
   let viewer;
   let airplaneEntity;
   let start;
   let stop;
+
+  const initChart = () => {
+    const data = [
+      { year: 2010, count: 10 },
+      { year: 2011, count: 20 },
+      { year: 2012, count: 15 },
+      { year: 2013, count: 25 },
+      { year: 2014, count: 22 },
+      { year: 2015, count: 30 },
+      { year: 2016, count: 28 },
+    ];
+
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: data.map((row) => row.year),
+        datasets: [
+          {
+            label: "Altitude",
+            data: data.map((row) => row.count),
+          },
+        ],
+      },
+    });
+  };
 
   const initMap = async () => {
     // TODO null check and catch errors
@@ -115,6 +150,11 @@ function CMap({ igcData }) {
     viewer.clock.currentTime = Cesium.JulianDate.fromIso8601(time);
   };
 
+  const init = () => {
+    initChart();
+    initMap();
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -124,11 +164,12 @@ function CMap({ igcData }) {
         />
       </Head>
       <Script
-        onReady={initMap}
+        onReady={init}
         src="https://cesium.com/downloads/cesiumjs/releases/1.99/Build/Cesium/Cesium.js"
       />
       <div id="cesiumContainer" className={styles.mapContainer}></div>
       <div className={styles.uiContainer}>
+        <canvas id="chart"></canvas>
         <input
           type={"range"}
           onDragEnd={handleSliderChange}
