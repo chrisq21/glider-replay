@@ -22,28 +22,71 @@ function CMap({ igcData }) {
   let stop;
 
   const initChart = () => {
-    const data = [
-      { year: 2010, count: 10 },
-      { year: 2011, count: 20 },
-      { year: 2012, count: 15 },
-      { year: 2013, count: 25 },
-      { year: 2014, count: 22 },
-      { year: 2015, count: 30 },
-      { year: 2016, count: 28 },
-    ];
+    const data = [];
 
-    new Chart(document.getElementById("chart"), {
+    for (let i = 0; i < recordTime.length - 1; i++) {
+      data.push({
+        time: recordTime[i],
+        altitude: pressureAltitude[i],
+      });
+    }
+
+    const canvasEl = document.getElementById("chart");
+
+    const chart = new Chart(canvasEl, {
+      responsive: true,
       type: "line",
       data: {
-        labels: data.map((row) => row.year),
+        labels: data.map((row) => row.time),
         datasets: [
           {
             label: "Altitude",
-            data: data.map((row) => row.count),
+            data: data.map((row) => row.altitude),
+            borderWidth: 0.1,
           },
         ],
       },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: false,
+        },
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            enabled: false,
+          },
+        },
+        scales: {
+          x: { display: false },
+        },
+        events: ["click"],
+      },
     });
+
+    /* chart listener */
+    document.getElementById("chart").onclick = function (evt) {
+      const points = chart.getElementsAtEventForMode(
+        evt,
+        "nearest",
+        { intersect: false },
+        true
+      );
+
+      if (points.length) {
+        const firstPoint = points[0];
+        const label = chart.data.labels[firstPoint.index];
+        const value =
+          chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+        viewer.clock.currentTime = Cesium.JulianDate.fromIso8601(label);
+      }
+    };
+
+    // chart.canvas.parentNode.style.height = `${window.innerHeight}px`;
+    chart.canvas.style.width = `${window.innerWidth}px`;
   };
 
   const initMap = async () => {
@@ -53,7 +96,8 @@ function CMap({ igcData }) {
     viewer = new Cesium.Viewer("cesiumContainer", {
       terrainProvider: Cesium.createWorldTerrain(),
     });
-    // Specify our point of interest.
+
+    /* Get terrain height of starting position */
     const pointOfInterest = Cesium.Cartographic.fromDegrees(
       coordinates[0][0],
       coordinates[0][1]
@@ -144,12 +188,6 @@ function CMap({ igcData }) {
     return samples[0].height;
   };
 
-  const handleSliderChange = (e) => {
-    const index = e.target.value;
-    const time = recordTime[index];
-    viewer.clock.currentTime = Cesium.JulianDate.fromIso8601(time);
-  };
-
   const init = () => {
     initChart();
     initMap();
@@ -169,13 +207,7 @@ function CMap({ igcData }) {
       />
       <div id="cesiumContainer" className={styles.mapContainer}></div>
       <div className={styles.uiContainer}>
-        <canvas id="chart"></canvas>
-        <input
-          type={"range"}
-          onDragEnd={handleSliderChange}
-          min={0}
-          max={recordTime.length - 1}
-        />
+        <canvas id="chart" className={styles.chart}></canvas>
       </div>
     </div>
   );
