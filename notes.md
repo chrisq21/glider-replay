@@ -3,6 +3,8 @@ V1 ----------------------------------------------------------
 - Customize interface
   - Speed controls
   - Timeline track with altitude graph (maybe with D3)
+    - Need to add terrain elevation chart beneath altitude chart.
+    - Rendered by querying for terrain elevation at each pressure altitude point. It might be ideal for this to be done server side and streamed as a React server component (nifty, this could be fun to try) 
   - Camera controls
     - Follow glider
     - Free Roam
@@ -12,6 +14,7 @@ V1 ----------------------------------------------------------
 
   - dropdown for glider type
 - Quick performance audit
+- Code cleanup
 
 V2 ----------------------------------------------------------
 
