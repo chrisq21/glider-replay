@@ -17,7 +17,11 @@
   background: white;
 }
 
-.canvas {
-  width: 100%;
+.chart {
   height: 100%;
+  width: 100%;
+}
+
+.chart svg text {
+  color: black;
 }

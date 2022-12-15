@@ -1,28 +1,29 @@
 V1 ----------------------------------------------------------
 
 - Customize interface
-  - Speed
-  - Timeline track with altitude graph (only display segment of flight time)
+  - Speed controls
+  - Timeline track with altitude graph (maybe with D3)
   - Camera controls
     - Follow glider
     - Free Roam
   - Upload IGC button
 - 3d models
   - v1: sailplane and paraglider
-  - detect glider type from igc
+
   - dropdown for glider type
-- Performance audit
+- Quick performance audit
 
 V2 ----------------------------------------------------------
 
-- Smooth out camera
 
+- 3D models
+  - detect glider type from igc data
+  - offer multiple types of models
+- Path / tracked entity smoothing
   - Don't follow every curve if possible
-
-- Array prep
-
+  - Smooth out the follow line so to remove jaggede edges
+- igc coordinates array processing
   - Prevent jumps by only moving camera position if it's a certain distance from previous position.
-  - remove parts of array where there's little to no movement. Ex pre-launch, sometimes sits too long in one spot
 
 - Custom Markers
   - Allow setting custom markers with images, video, and text description.
