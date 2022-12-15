@@ -17,10 +17,11 @@ function CMap({igcData}) {
   }
 
   let viewer
-  let airplaneEntity
+  let gliderEntity
   let start
   let stop
   let x
+  let initialGroundHeight = 0
 
   const initChart = () => {
     const data = []
@@ -174,7 +175,7 @@ function CMap({igcData}) {
 
     /* Get terrain height of starting position */
     const pointOfInterest = Cesium.Cartographic.fromDegrees(coordinates[0][0], coordinates[0][1])
-    const initialGroundHeight = await getGroundHeight(viewer, pointOfInterest)
+    initialGroundHeight = await getGroundHeight(viewer, pointOfInterest)
     const flightInitialHeight = coordinates[0][2]
     const groundDiff = flightInitialHeight - initialGroundHeight
 
@@ -207,13 +208,18 @@ function CMap({igcData}) {
     viewer.clock.multiplier = 3
     const timelineTrackEl = document.querySelector('#track-line')
     viewer.clock.onTick.addEventListener(function (clock) {
+      // Update timeline track
       const newTime = Cesium.JulianDate.toIso8601(clock.currentTime)
       const parsedTime = d3.utcParse('%Y-%m-%dT%H:%M:%S')(newTime.split('.')[0])
       if (x) {
         timelineTrackEl.setAttribute('x1', x(parsedTime))
         timelineTrackEl.setAttribute('x2', x(parsedTime))
       }
+
+      // Update glider track
+      // updateGliderLine()
     })
+
     // Start playing the scene.
     viewer.clock.shouldAnimate = true
     const positionProperty = new Cesium.SampledPositionProperty()
@@ -226,11 +232,37 @@ function CMap({igcData}) {
       positionProperty.addSample(time, position)
     }
 
+    function addGliderLine() {
+      if (gliderEntity) {
+        viewer.entities.add({
+          id: 'glider-track-line',
+          polyline: {
+            positions: new Cesium.CallbackProperty(function (time) {
+              if (!gliderEntity) return
+              const position = gliderEntity.position.getValue(time)
+              const degrees = Cesium.Cartographic.fromCartesian(position)
+              return Cesium.Cartesian3.fromDegreesArrayHeights([
+                Cesium.Math.toDegrees(degrees.longitude),
+                Cesium.Math.toDegrees(degrees.latitude),
+                0,
+                Cesium.Math.toDegrees(degrees.longitude),
+                Cesium.Math.toDegrees(degrees.latitude),
+                degrees.height,
+              ])
+            }),
+            width: 2,
+            material: new Cesium.ColorMaterialProperty(Cesium.Color.fromBytes(255, 238, 128)),
+          },
+        })
+      }
+    }
+
     async function loadModel() {
       // 1412577 sailplane id
       // Load the glTF model from Cesium ion.
       const airplaneUri = await Cesium.IonResource.fromAssetId(1412577)
-      airplaneEntity = viewer.entities.add({
+      gliderEntity = viewer.entities.add({
+        id: 'glider',
         availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({start: start, stop: stop})]),
         position: positionProperty,
         // Attach the 3D model instead of the green point.
@@ -243,8 +275,9 @@ function CMap({igcData}) {
         }),
       })
 
-      viewer.trackedEntity = airplaneEntity
-      viewer.camera.zoomOut(500)
+      viewer.trackedEntity = gliderEntity
+
+      addGliderLine()
     }
 
     loadModel()
