@@ -215,9 +215,6 @@ function CMap({igcData}) {
         timelineTrackEl.setAttribute('x1', x(parsedTime))
         timelineTrackEl.setAttribute('x2', x(parsedTime))
       }
-
-      // Update glider track
-      // updateGliderLine()
     })
 
     // Start playing the scene.
